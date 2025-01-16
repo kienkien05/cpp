@@ -1,0 +1,87 @@
+#include <iostream>
+using namespace std;
+ 
+template <class T>
+class Queue {
+    private:
+        struct Node {
+            T val;
+            Node *next;
+            Node(T v = T(), Node *n = nullptr) : val(v), next(n) {}
+        };
+        int size;
+        Node *head;
+        Node *tail;
+    public:
+        Queue() {
+            size = 0;
+            head = nullptr;
+            tail = nullptr;
+        }
+ 
+        bool isEmpty() {
+            return size == 0;
+        }
+ 
+        void enqueue(T val) {
+            Node *temp = new Node(val);
+            if (isEmpty()) {
+                head = tail = temp;
+            }
+            else {
+                tail -> next = temp;
+            }
+            size++;
+        }
+ 
+        void dequeue() {
+            Node *temp = head;
+            head = temp -> next;
+            delete temp;
+            size--;
+        }
+ 
+        int getSize() {
+            return size;
+        }
+ 
+        T getTop() {
+            return head -> val;
+        }
+ 
+        void clear() {
+            while (!isEmpty()) {
+                dequeue();
+            }
+        }
+ 
+        void print() {
+            Node *temp = head;
+            while(temp != nullptr) {
+                cout << temp -> val << " ";
+                temp = temp -> next;
+            }
+            cout << endl;
+        }
+};
+ 
+int main() {
+    Queue<int> queue;
+ 
+    queue.enqueue(10);
+    queue.enqueue(20);
+    queue.enqueue(30);
+ 
+    cout << "Queue after enqueuing: ";
+    queue.print(); // Output: 10 20 30
+ 
+    cout << "Front element: " << queue.getTop() << endl; // Output: 10
+ 
+    queue.dequeue();
+    cout << "Queue after dequeuing: ";
+    queue.print(); // Output: 20 30
+ 
+    cout << "Queue size: " << queue.getSize() << endl; // Output: 2
+ 
+    return 0;
+}
