@@ -1,0 +1,110 @@
+#include <iostream>
+using namespace std;
+ 
+template <class T>
+class LinkedList {
+private:
+    struct Node {
+        T val;
+        Node* next;
+        Node(T value) : val(value), next(nullptr) {}
+    };
+ 
+    Node* head;
+    Node* tail;
+    int size;
+ 
+    int partition(T a[], int l, int r) {
+        T pivot = a[(l + r) / 2];
+        while (l <= r) {
+            while (a[l] < pivot) {
+                l++;
+            }
+            while (a[r] > pivot) {
+                r--;
+            }
+            if (l <= r) {
+                swap(a[l], a[r]);
+                l++;
+                r--;
+            }
+        }
+        return l;
+    }
+ 
+    void quickSort(T a[], int l, int r) {
+        if (l < r) {
+            int i = partition(a, l, r);
+            quickSort(a, l, i - 1);
+            quickSort(a, i, r);
+        }
+    }
+ 
+public:
+    LinkedList() : head(nullptr), tail(nullptr), size(0) {}
+ 
+    void addLast(T value) {
+        Node* newNode = new Node(value);
+        if (tail != nullptr) {
+            tail->next = newNode;
+        }
+        tail = newNode;
+        if (head == nullptr) {
+            head = newNode;
+        }
+        size++;
+    }
+ 
+    T* convertToArray() {
+        T* array = new T[size];
+        Node* temp = head;
+        int i = 0;
+        while (temp != nullptr) {
+            array[i++] = temp->val;
+            temp = temp->next;
+        }
+        return array;
+    }
+ 
+    void convertToLinkedList(T* array) {
+        head = tail = nullptr;
+        for (int i = 0; i < size; i++) {
+            addLast(array[i]);
+        }
+    }
+ 
+    void print() {
+        Node* temp = head;
+        while (temp != nullptr) {
+            std::cout << temp->val << " ";
+            temp = temp->next;
+        }
+        std::cout << std::endl;
+    }
+ 
+    void sort() {
+        T* array = convertToArray();
+        quickSort(array, 0, size - 1);
+        convertToLinkedList(array);
+        delete[] array; // Giải phóng bộ nhớ mảng
+    }
+};
+ 
+int main() {
+    LinkedList<int> list;
+    list.addLast(3);
+    list.addLast(1);
+    list.addLast(4);
+    list.addLast(2);
+    list.addLast(5);
+ 
+    std::cout << "Original Linked List: ";
+    list.print();
+ 
+    list.sort();
+ 
+    std::cout << "Sorted Linked List: ";
+    list.print();
+ 
+    return 0;
+}
