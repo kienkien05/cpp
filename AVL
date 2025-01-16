@@ -1,0 +1,150 @@
+#include <iostream>
+#include <algorithm>
+using namespace std;
+ 
+template <class T>
+class TreeAVL {
+private:
+    struct Node {
+        T val;
+        Node* left;
+        Node* right;
+        int height;
+        Node(T v = T(), Node* l = nullptr, Node* r = nullptr, int h = 0)
+            : val(v), left(l), right(r), height(h) {}
+    };
+    Node* root;
+ 
+    int getHeight(Node* node) {
+        if (node == nullptr) {
+            return -1;
+        } else {
+            return node->height;
+        }
+    }
+ 
+    void updateHeight(Node* node) {
+        if (node) {
+            node->height = 1 + max(getHeight(node->left), getHeight(node->right));
+        }
+    }
+ 
+    void rotateLeft(Node*& x) {
+        Node* y = x->right;
+        Node* T2 = y->left;
+        y->left = x;
+        x->right = T2;
+        updateHeight(x);
+        updateHeight(y);
+        x = y;
+    }
+ 
+    void rotateRight(Node*& x) {
+        Node* y = x->left;
+        Node* T2 = y->right;
+        y->right = x;
+        x->left = T2;
+        updateHeight(x);
+        updateHeight(y);
+        x = y;
+    }
+ 
+    Node* balance(Node* node) {
+        if (!node) return node;
+        updateHeight(node);
+        int balanceFactor = getHeight(node->left) - getHeight(node->right);
+        if (balanceFactor > 1) {
+            if (getHeight(node->left->left) >= getHeight(node->left->right)) {
+                rotateRight(node);
+            } else {
+                rotateLeft(node->left);
+                rotateRight(node);
+            }
+        } else if (balanceFactor < -1) {
+            if (getHeight(node->right->right) >= getHeight(node->right->left)) {
+                rotateLeft(node);
+            } else {
+                rotateRight(node->right);
+                rotateLeft(node);
+            }
+        }
+        return node;
+    }
+ 
+    void add(Node*& temp, T val) {
+        if (!temp) {
+            temp = new Node(val);
+        } else if (val < temp->val) {
+            add(temp->left, val);
+        } else {
+            add(temp->right, val);
+        }
+        temp = balance(temp);
+    }
+ 
+    Node* min(Node* node) {
+        while (node && node->left) {
+            node = node->left;
+        }
+        return node;
+    }
+ 
+    Node* erase(Node* node, T x) {
+        if (!node) return node;
+        if (x < node->val) {
+            node->left = erase(node->left, x);
+        } else if (x > node->val) {
+            node->right = erase(node->right, x);
+        } else {
+            if (!node->left) {
+                Node* temp = node->right;
+                delete node;
+                return temp;
+            } else if (!node->right) {
+                Node* temp = node->left;
+                delete node;
+                return temp;
+            }
+            Node* minNode = min(node->right);
+            node->val = minNode->val;
+            node->right = erase(node->right, minNode->val);
+        }
+        return balance(node);
+    }
+ 
+    void print(Node* cur) {
+        if (!cur) return;
+        print(cur->left);
+        cout << cur->val << " " << cur->height << endl;
+        print(cur->right);
+    }
+ 
+public:
+    TreeAVL() : root(nullptr) {}
+ 
+    void add(T val) {
+        add(root, val);
+    }
+ 
+    void erase(T x) {
+        root = erase(root, x);
+    }
+ 
+    void print() {
+        print(root);
+    }
+};
+ 
+int main() {
+    TreeAVL<int> tree;
+    tree.add(10);
+    tree.add(20);
+    tree.add(30);
+    tree.add(25);
+    tree.add(15);
+    tree.print();
+    cout << "After deletion:" << endl;
+    tree.erase(20);
+    tree.print();
+    return 0;
+}
