@@ -1,0 +1,86 @@
+#include <iostream>
+using namespace std;
+ 
+template <class T>
+class Stack {
+    private:
+        struct Node {
+            T val;
+            Node *next;
+            Node(T v = T(), Node *n = nullptr) : val(v), next(n) {}
+        };
+        Node *top;
+        int size;
+    public:
+        Stack() {
+            size = 0;
+            top = nullptr;
+        }
+ 
+        void push(T val) {
+            Node *temp = new Node(val);
+            if (top == nullptr) {
+                top = temp;
+            }
+            else {
+                temp -> next = top;
+                top = temp;
+            }
+            size++;
+        }
+ 
+        void pop() {
+            Node *temp = top;
+            top = top -> next;
+            delete temp;
+            size--;
+        }
+ 
+        int getSize() {
+            return size;
+        }
+ 
+        T getTop() {
+            return top -> val;
+        }
+ 
+        bool isEmpty() {
+            return size == 0;
+        }
+ 
+        void clear() {
+            while (!isEmpty()) {
+                pop();
+            }
+        }
+ 
+        void print() {
+            Node *temp = top;
+            while(temp != nullptr) {
+                cout << temp -> val << " ";
+                temp = temp -> next;
+            }
+            cout << endl;
+        }
+};
+ 
+int main() {
+    Stack<int> stack;
+ 
+    stack.push(10);
+    stack.push(20);
+    stack.push(30);
+ 
+    cout << "Stack after pushing: ";
+    stack.print(); // Output: 30 20 10
+ 
+    cout << "Top element: " << stack.getTop() << endl; // Output: 30
+ 
+    stack.pop();
+    cout << "Stack after popping: ";
+    stack.print(); // Output: 20 10
+ 
+    cout << "Stack size: " << stack.getSize() << endl; // Output: 2
+ 
+    return 0;
+}
