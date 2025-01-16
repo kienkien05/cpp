@@ -1,0 +1,129 @@
+#include <iostream>
+using namespace std;
+ 
+template <class T>
+class LinkedList {
+private:
+    struct Node {
+        T val;
+        Node* next;
+        Node(T value) : val(value), next(nullptr) {}
+    };
+ 
+    Node* head;
+    Node* tail;
+    int size;
+ 
+    void merge(T a[], int l, int mid, int r) {
+        int left = mid - l + 1;
+        int right = r - mid;
+ 
+        T* L = new T[left];
+        T* R = new T[right];
+ 
+        for (int i = 0; i < left; i++) {
+            L[i] = a[l + i];
+        }
+        for (int i = 0; i < right; i++) {
+            R[i] = a[mid + 1 + i];
+        }
+ 
+        int i = 0, j = 0, k = l;
+        while (i < left && j < right) {
+            if (L[i] <= R[j]) {
+                a[k++] = L[i++];
+            } else {
+                a[k++] = R[j++];
+            }
+        }
+ 
+        while (i < left) {
+            a[k++] = L[i++];
+        }
+        while (j < right) {
+            a[k++] = R[j++];
+        }
+ 
+        delete[] L;
+        delete[] R;
+    }
+ 
+    void mergeSort(T a[], int l, int r) {
+        if (l < r) {
+            int mid = (l + r) / 2;
+            mergeSort(a, l, mid);
+            mergeSort(a, mid + 1, r);
+            merge(a, l, mid, r);
+        }
+    }
+ 
+public:
+    LinkedList() : head(nullptr), tail(nullptr), size(0) {}
+ 
+    void addLast(T value) {
+        Node* newNode = new Node(value);
+        if (tail != nullptr) {
+            tail->next = newNode;
+        }
+        tail = newNode;
+        if (head == nullptr) {
+            head = newNode;
+        }
+        size++;
+    }
+ 
+    T* ConvertToArray() {
+        T* array = new T[size];
+        Node* temp = head;
+        int i = 0;
+        while (temp != nullptr) {
+            array[i++] = temp->val;
+            temp = temp->next;
+        }
+        return array;
+    }
+ 
+    void ConvertToLinkedList(T* array) {
+        head = tail = nullptr;
+        int arrSize = size;
+        size = 0;
+        for (int i = 0; i < arrSize; i++) {
+            addLast(array[i]);
+        }
+    }
+ 
+    void print() {
+        Node* temp = head;
+        while (temp != nullptr) {
+            std::cout << temp->val << " ";
+            temp = temp->next;
+        }
+        std::cout << std::endl;
+    }
+ 
+    void sort() {
+        T* array = ConvertToArray();
+        mergeSort(array, 0, size - 1);
+        ConvertToLinkedList(array);
+        delete[] array; // Giải phóng bộ nhớ mảng
+    }
+};
+ 
+int main() {
+    LinkedList<int> list;
+    list.addLast(3);
+    list.addLast(1);
+    list.addLast(4);
+    list.addLast(2);
+    list.addLast(5);
+ 
+    std::cout << "Original Linked List: ";
+    list.print();
+ 
+    list.sort();
+ 
+    std::cout << "Sorted Linked List: ";
+    list.print();
+ 
+    return 0;
+}
